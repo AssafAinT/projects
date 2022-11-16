@@ -1,15 +1,15 @@
 #ifndef __ILRD_RD127_128_WAITABLE_Q_HPP__
 #define __ILRD_RD127_128_WAITABLE_Q_HPP__
 
-#include <queue>
-#include <boost/noncopyable.hpp>
-#include <boost/chrono.hpp>
-#include <condition_variable>
-//boost::chrono::nanoseconds
+#include <queue>//std::queue
+#include <boost/noncopyable.hpp>//noncopyable
+#include <condition_variable>//std::condition_variable
+
 namespace ilrd
 {
     //T must be copyable and assignable
     //Q must supply queue interface
+    
     template<class T, class Q = std::queue<T> > //default queue
     class WaitableQueue : private boost::noncopyable
     {
@@ -17,7 +17,7 @@ namespace ilrd
             void Enqueue(const T& data);
             void Dequeue(T& out_p); //without timeout
 
-            bool Dequeue(T& out_p, size_t time_out); //with timeout
+            bool Dequeue(T& out_p, size_t time_out); //with timeout -nanoseconds
             bool IsEmpty(void) const;
         private:
             Q m_queue_like; 
@@ -27,7 +27,7 @@ namespace ilrd
 
     };
 
-    template<class T, class Q> //default queue
+    template<class T, class Q> 
     void WaitableQueue<T, Q>::Enqueue(const T& data)
     {
         uni_lock lock(m_mutex);
@@ -36,18 +36,20 @@ namespace ilrd
         
     }
 
-    template<class T, class Q> //default queue
+    template<class T, class Q> 
     bool WaitableQueue<T, Q>::Dequeue(T& out_p, size_t time_out)
     {
         
         uni_lock lock(m_mutex);
         std::chrono::system_clock::time_point AbsTimeOut
-                    (std::chrono::_V2::system_clock::now() + 
+                    (std::chrono::system_clock::now() + 
                     static_cast<std::chrono::nanoseconds>(time_out));
+        std::cv_status timeout_stat;
 
         while (m_queue_like.empty())
         {
-            if (std::cv_status::timeout == m_cond_ready_to_read.wait_until(lock, AbsTimeOut))
+            timeout_stat = m_cond_ready_to_read.wait_until(lock, AbsTimeOut);
+            if (std::cv_status::timeout == timeout_stat)
             {
                 return false;
             }
@@ -58,13 +60,13 @@ namespace ilrd
         return true;
     }
 
-    template<class T, class Q> //default queue
+    template<class T, class Q> 
     void WaitableQueue<T, Q>::Dequeue(T& out_p)
     { 
         Dequeue(out_p, 1000);
     }
 
-    template<class T, class Q> //default queue
+    template<class T, class Q> 
     bool WaitableQueue<T, Q>::IsEmpty(void) const
     {
         return (m_queue_like.empty());
