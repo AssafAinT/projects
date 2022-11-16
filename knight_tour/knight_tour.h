@@ -1,11 +1,9 @@
 /****************************************************
 * knight_tour                                       *
 * Assaf Ainhoren                                    *
-* Reviewer: Ester Shpoker                           *
-* date: 13.08.2022                                  *
 ****************************************************/
-#ifndef __ILRD_OL127_128_KNIGHT_TOUR_H__
-#define __ILRD_OL127_128_KNIGHT_TOUR_H__
+#ifndef KNIGHT_TOUR_H__
+#define KNIGHT_TOUR_H__
 
 #include <stddef.h> /*size_t*/
 #include "utils.h" /* bool_ty, status_ty */
@@ -34,4 +32,4 @@ status_ty KnightTour(const size_t start_position,
                     unsigned char *o_result_tour,
 					bool_ty should_use_heuristic);
 
-#endif /* __ILRD_OL127_128_KNIGHT_TOUR_H__ */
+#endif 
