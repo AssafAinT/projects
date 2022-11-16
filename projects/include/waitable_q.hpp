@@ -21,7 +21,7 @@ namespace ilrd
             bool IsEmpty(void) const;
         private:
             Q m_queue_like; 
-            std::mutex m_mutex;
+            mutable std::mutex m_mutex;
             std::condition_variable m_cond_ready_to_read;
             typedef typename std::unique_lock<std::mutex> uni_lock;
 
@@ -61,15 +61,21 @@ namespace ilrd
     template<class T, class Q> 
     void WaitableQueue<T, Q>::Dequeue(T& out_p)
     { 
-        Dequeue(out_p, 1000);
+        uni_lock unique_lock(m_mutex);
+        while (this->IsEmpty())
+        {
+            m_cond_ready_to_read.wait(unique_lock); 
+        }
+        out_p =m_queue_like.front();
+        m_queue_like.pop();
     }
 
     template<class T, class Q> 
     bool WaitableQueue<T, Q>::IsEmpty(void) const
     {
+        uni_lock unique_lock(m_mutex);
         return (m_queue_like.empty());
     }
-
 
 }
 
