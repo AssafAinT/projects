@@ -1,2 +1,0 @@
-alias gdpp='g++ -std=c++98 -pedantic -Wall -Wextra -Werror -Wshadow -Wsign-conversion -g'
-alias gcpp='g++ -std=c++11 -pedantic -Wall -Wextra -g'
