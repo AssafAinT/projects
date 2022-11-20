@@ -1,4 +1,0 @@
-hi my name is jacob
-i'am trying to write a letter to you from spain 
-hello 
-exit
