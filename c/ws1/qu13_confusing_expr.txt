@@ -1,0 +1,25 @@
+
+1.
+main()
+    {
+         int i=-1, j=-1, k=0, l=2,m;
+         m = i++&&j++&&k++||l++;
+         printf("%d%d%d%d%d", i, j, k, l, m);
+    }
+2.
+# include <stdio.h>
+
+main()
+{
+  int num=35;  
+  printf("%d %d %d",num==35,num=50,num>40);  
+  return 0;  
+}
+
+
+3.6*2/ (2+1 * 2/3 +6) + 8 *(8\4);
+
+4. (a++ + ++ b) * (++a + b);
+
+5. (a\++b) * (++a --b);
+

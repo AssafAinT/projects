@@ -1,0 +1,41 @@
+.\" manpage for watchdog software
+.\" Contact assafain@gmail.com for any corrections and suggestions.
+.TH man 1 "05 Sept 2022" "1.0" "watchdog man page"
+.SH NAME
+MakeMeImmortal - Create Watchdog over current block of code.
+
+LetMeDie - Release watchdog resources.
+
+.SH SYNOPSIS
+#include "watchdog.h"
+
+int MakeMeImmortal(wd_status_ty MakeMeImmortal(size_t time_interval,
+                  size_t threshold,
+                  const char *executable_name);
+     
+
+void LetMeDie(void);
+
+.SH DESCRIPTION 
+MakeMeImmortal:
+Create Watchdog over               
+current block of code                              
+params: time_interval - no. of seconds to polling  
+threshold - no. of retries before reset          
+executable_name - exectuable to reset if needed  
+Return: SUCCESSED if successful.                  
+otherwise:                                        
+according to the enum above, failure              
+could be a result of several sitation as       
+mentioned above                                
+in any case MakeMyImmortal return any other    
+value than SUCCESSES - the client program need 
+to call LetMeDie or else the program is unsafe.    
+
+
+LetMeDie:                                          
+Frees all the resources of watchdog                
+From this point the program is no longer protected 
+
+.SH AUTHOR
+Assaf Ainhoren (assafain@gmail.com)
