@@ -1,5 +1,5 @@
-#ifndef __ASSAF_RD127_128_THREAD_POOL_HPP__
-#define __ASSAF_RD127_128_THREAD_POOL_HPP__
+#ifndef __ASSAF_THREAD_POOL_HPP__
+#define __ASSAF_THREAD_POOL_HPP__
 
 
 #include <thread> //std::thread
@@ -14,7 +14,18 @@
 #include <iostream> //std::cout 
 #include <cstdio> //printf
 #include "waitable_pq.hpp"
-
+namespace details
+{
+    
+    inline sem_t CreateSem(sem_t *sem, unsigned int init_val)
+    {
+        if (-1 == sem_init(sem, 0, init_val))
+        {
+            std::__throw_bad_alloc();   
+        }
+        return *sem;
+    }
+}//namespace details
 namespace assaf
 {
 
@@ -72,7 +83,7 @@ class ThreadPool:private boost::noncopyable
     void Pause();
     void Resume();
     void SetNumberOfThreads(size_t thread_amount);
-
+    
 
 
     private:
@@ -82,6 +93,8 @@ class ThreadPool:private boost::noncopyable
     sem_t m_pauseSem; // c sem 
     sem_t m_sem_finish;
     std::unordered_map<std::thread::id, bool> m_enables;
+    bool is_paused;
+    // size_t m_to_resume;
 
     
     class PauseTask:public ITask 
@@ -105,53 +118,10 @@ class ThreadPool:private boost::noncopyable
         
         private:
         std::unordered_map<std::thread::id, bool> &m_enables; 
-        
+
     };
     
 };
-}// namespace assaf
-namespace details
-{
-    
-    inline sem_t CreateSem(sem_t *sem, unsigned int init_val)
-    {
-        if (-1 == sem_init(sem, 0, init_val))
-        {
-            std::cout << "sem_init failed " << std::endl;
-        }
-        return *sem;
-    }
-    inline void ThreadFunc(assaf::WaitablePQueue<std::pair<int, std::shared_ptr<assaf::ThreadPool::ITask> > > &m_pqueue ,
-                            std::unordered_map<std::thread::id, bool> &m_enables,
-                            sem_t *m_sem_finish)
-    {
-        
-        std::thread::id id = std::this_thread::get_id();
-        m_enables[id] = true;
-        
-        while (m_enables[id])
-        {
-            std::pair <int, std::shared_ptr<assaf::ThreadPool::ITask> >ret;
-            m_pqueue.Dequeue(ret);
-            ret.second->Run();
-        }
-        sem_post(m_sem_finish);
-    }
-    inline void CreateAndDetachThread(assaf::WaitablePQueue<std::pair<int, std::shared_ptr<assaf::ThreadPool::ITask> > > &m_pqueue ,
-                            std::unordered_map<std::thread::id, bool> &m_enables,
-                            sem_t *m_sem_finish)
-    {
-        std::thread task_executer(details::ThreadFunc,
-                                 std::ref(m_pqueue),
-                                 std::ref(m_enables), 
-                                 m_sem_finish);
-        task_executer.detach();
-    }
-
-    
-}
-namespace assaf
-{
 
 template <typename T>
 ThreadPool::FutureTask<T>::FutureTask(std::function<T ()> func): m_func(func), 
@@ -180,4 +150,4 @@ void ThreadPool::FutureTask<T>::Run()
 
 }// namespace assaf
 
-#endif //__ILRD_RD127_128_THREAD_POOL_HPP__
+#endif //__ASSAF_RD127_128_THREAD_POOL_HPP__

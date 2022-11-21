@@ -1,18 +1,58 @@
 #include "thread_pool.hpp"
+namespace details
+{
+    
+    
+    inline void ThreadFunc(assaf::WaitablePQueue<std::
+                          pair<int, std::shared_ptr<assaf::ThreadPool::ITask> > > 
+                          &m_pqueue ,
+                          std::unordered_map<std::thread::id, bool> &m_enables,
+                          sem_t *m_sem_finish)
+    {
+        sem_post(m_sem_finish);
+        std::thread::id id = std::this_thread::get_id(); 
+        m_enables.insert({id, true});
+    
+        while (m_enables[id])
+        {
+            std::pair <int, std::shared_ptr<assaf::ThreadPool::ITask> >ret;
+            m_pqueue.Dequeue(ret);
+            ret.second->Run();
+        }
+    
+        sem_post(m_sem_finish);
+    }
+    inline void CreateAndDetachThread(assaf::WaitablePQueue
+                                     <std::pair<int, std::shared_ptr
+                                     <assaf::ThreadPool::ITask> > > &m_pqueue,
+                                     std::unordered_map<std::thread::id, bool>
+                                     &m_enables,
+                                     sem_t *m_sem_finish)
+    {
+        std::thread task_executer(details::ThreadFunc,
+                                 std::ref(m_pqueue),
+                                 std::ref(m_enables), 
+                                 m_sem_finish);
+        task_executer.detach();
+    }
 
+    
+}
 namespace assaf
 {
-ThreadPool::ThreadPool(size_t thread_amount) : m_threadAmount(thread_amount),
+ThreadPool::ThreadPool(size_t thread_amount) : m_threadAmount(0),
                                                m_pauseSem(details::CreateSem(&m_pauseSem, 0)),
-                                               m_sem_finish(details::CreateSem(&m_sem_finish, 0))
+                                               m_sem_finish(details::CreateSem(&m_sem_finish, 0)),
+                                               is_paused(false)
 {
     for (size_t i = 0; i < thread_amount; ++i)
     {
         details::CreateAndDetachThread(std::ref(m_pqueue),
                                  std::ref(m_enables), 
                                  &m_sem_finish);
-
+        sem_wait(&m_sem_finish);
     }
+    m_threadAmount = thread_amount;
 
 
 }
@@ -20,8 +60,8 @@ ThreadPool::~ThreadPool()
 {
     for (size_t i = 0; i < m_threadAmount; ++i)
     {
-        std::shared_ptr<ITask > task  (new BadApple(m_enables));
-        AddTask(task, static_cast<priority_ty>(3));
+        std::shared_ptr<ITask > task(new BadApple(m_enables));
+        AddTask(task, static_cast<priority_ty>(HIGH+2));
     }
     for (size_t i = 0; i < m_threadAmount; ++i)
     {
@@ -42,10 +82,13 @@ void ThreadPool::AddTask(std::shared_ptr<ITask> task, priority_ty priority)
 
 void ThreadPool::Pause()
 {
+    // m_to_resume = m_threadAmount;
+    is_paused = true;
     for (size_t i = 0; i < m_threadAmount; ++i)
     {
-        std::shared_ptr<ITask > task  (new PauseTask(m_pauseSem));
-        AddTask(task, static_cast<priority_ty>(1));
+        printf("Pausing \n");
+        std::shared_ptr<ITask > task(new PauseTask(m_pauseSem));
+        AddTask(task, static_cast<priority_ty>(HIGH+2));
     }
 }
 
@@ -61,7 +104,6 @@ ThreadPool::PauseTask::~PauseTask()
 }
 void ThreadPool::PauseTask::Run()
 {
-    printf("Pausing \n");
     sem_wait(&m_pauseSem);
 }
 
@@ -73,10 +115,11 @@ ThreadPool::FunctionTask::~FunctionTask()
 
 void ThreadPool::Resume()
 {
+    // printf("thread amount for resume %d\n", m_to_resume);
+    is_paused = false;
     for (std::size_t i = 0; i < m_threadAmount ; ++i)
     {
         printf("Resuming \n");
-        std::cout << "Resuming " << std::endl;
         sem_post(&m_pauseSem);
     }
 }
@@ -102,27 +145,39 @@ void ThreadPool::BadApple::Run()
     m_enables[id] = false;
 }
 
+
 void ThreadPool::SetNumberOfThreads(size_t thread_amount)
 {
-    if (thread_amount > m_threadAmount)
+    int diff = thread_amount - m_threadAmount;
+    if (is_paused)
     {
-        for ( size_t i = 0; i <thread_amount -  m_threadAmount; ++i)
+        throw std::string("illegal state");
+    }
+    if (diff > 0)
+    {
+        for (int i = 0; i < diff ; ++i)
         {
             details::CreateAndDetachThread(std::ref(m_pqueue),
                                     std::ref(m_enables), 
                                     &m_sem_finish);
+            sem_wait(&m_sem_finish);
         }
-        m_threadAmount = thread_amount;
     }
-    if (thread_amount < m_threadAmount)
+    else
     {
-        for (size_t i = 0; i < m_threadAmount - thread_amount; ++i)
+        for (int i = diff; i != 0; ++i)
         {
-            std::shared_ptr<ITask > task  (new BadApple(m_enables));
-            AddTask(task, static_cast<priority_ty>(3));
+            std::shared_ptr<ITask > task(new BadApple(m_enables));
+            AddTask(task, static_cast<priority_ty>(HIGH+2));
         }
-        m_threadAmount = thread_amount;
+        for (int i = diff; i != 0; ++i)
+        {
+            sem_wait(&m_sem_finish);
+
+        }
+       
     }
+    m_threadAmount = thread_amount;
 }
 
 }
