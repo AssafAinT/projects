@@ -37,6 +37,7 @@ function resetConfig(){
     document.querySelector('.number').textContent = '?';
     document.querySelector('body').style.backgroundColor = '#222';
     document.querySelector('.number').style.width = '15rem';
+    document.querySelector('.guess').value= '';
 }
 document.querySelector('.check').addEventListener('click',function(){
     const guess = Number(document.querySelector('.guess').value);
@@ -45,6 +46,10 @@ document.querySelector('.check').addEventListener('click',function(){
     //indicating user that he hasnt clicked any number
     if (!guess) {
         document.querySelector('.message').textContent = 'No number pressed try again';
+    }
+    if (currScore < 1){
+        handleGuess('Game Over 🫣');
+        document.querySelector('body').style.backgroundColor = '#FF0000';
     }
     //when player wins 
     else if(guess === secretNumber){
@@ -55,25 +60,13 @@ document.querySelector('.check').addEventListener('click',function(){
     }
     //when guess too low
     else if (guess < secretNumber){
-        if (currScore > 1){
             handleGuess('Too Low 🫣');
             adaptScore();
-        } else {
-            handleGuess('Game Over 🫣');
-            adaptScore();
-        }
     }
     //when guess too high
     else if (guess > secretNumber){
-        if (currScore > 1){
             handleGuess('Too High 🫣');
             adaptScore();
-        }
-        else {
-            handleGuess('Game Over 🫣');
-            adaptScore();
-        }
-        
     }
     
     
