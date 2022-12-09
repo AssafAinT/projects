@@ -20,9 +20,14 @@ console.log(document.querySelector('.guess').value);
 */
 
 let secretNumber = Math.trunc(Math.random() * 20) + 1;
-let currScore = Number(document.querySelector('.score').textContent);
+let currScore = 20;
+let highScore = 0
 
-function handleGuess(string, is_win){
+function highScoreManager(currhighScore){
+    highScore = currhighScore > highScore ? currhighScore : highScore;
+    document.querySelector('.highscore').textContent = highScore;
+}
+function handleGuess(string){
     document.querySelector('.message').textContent = string;
     
 }
@@ -54,9 +59,9 @@ document.querySelector('.check').addEventListener('click',function(){
     //when player wins 
     else if(guess === secretNumber){
         handleGuess('Correct Numer! 🥳');
-        
         document.querySelector('body').style.backgroundColor = '#60b347';
         document.querySelector('.number').style.width = '30rem';
+        highScoreManager(currScore);
     }
     //when guess too low
     else if (guess < secretNumber){
