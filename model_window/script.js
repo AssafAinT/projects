@@ -23,9 +23,7 @@ btnCloseModal.addEventListener('click', resetPage);
 overlay.addEventListener('click', resetPage);
 
 document.addEventListener('keydown',function(e){
-    if (e.key === "Escape"){
-        if(!modal.classList.contains('hidden')){
+    if (e.key === "Escape" && !modal.classList.contains('hidden')){
             resetPage();
         }
-    }
 });
