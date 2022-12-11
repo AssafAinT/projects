@@ -2,6 +2,7 @@
 function resetPage(){
     playing = true;
     document.getElementById(`current--${activePlayer}`).textContent = 0;
+    document.getElementById('name--' + activePlayer).textContent = `PLAYER ${activePlayer +1}`; 
     scoreOneEl.textContent = 0;
     scoreTwoEl.textContent = 0;
     diceRoll.classList.add('hidden');
