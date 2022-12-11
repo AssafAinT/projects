@@ -5,7 +5,15 @@ function resetPage(){
     scoreTwoEl.textContent = 0;
     diceRoll.classList.add('hidden');
 }
-
+const switchPlayer = function(){
+    document.getElementById('current--' + activePlayer).textContent = 0;
+    activePlayer = activePlayer === 0 ? 1 : 0;
+    currScore = 0;
+    //toggle does the decision for me 
+    //toggling will ensure that the correct user is lighted
+    playerZero.classList.toggle('player--active');
+    playerOne.classList.toggle('player--active');
+}
 const playerZero = document.querySelector('.player--0');
 const playerOne = document.querySelector('.player--1');
 const diceRoll = document.querySelector('.dice');
@@ -40,33 +48,19 @@ btnRoll.addEventListener('click', function(){
         document.getElementById('current--' + activePlayer).textContent = currScore;
         
     } else {
-        document.getElementById('current--' + activePlayer).textContent = 0;
-        activePlayer = activePlayer === 0 ? 1 : 0;
-        currScore = 0;
-        //toggle does the decision for me 
-        //toggling will ensure that the correct user is lighted
-        playerZero.classList.toggle('player--active');
-        playerOne.classList.toggle('player--active');
-
+        
+        switchPlayer();
     }
 });
 
 btnHold.addEventListener('click', function(){
-    let highScore = Number(document.getElementById('score--'+ activePlayer).textContent) + currScore;
-    currScore = 0;
-    document.getElementById('current--' + activePlayer).textContent = 0;
-    document.getElementById('score--'+ activePlayer).textContent =highScore;
-    
-    
+    scores[activePlayer] += currScore; 
+    document.getElementById('score--'+ activePlayer).textContent =scores[activePlayer];
 
-    if (highScore < 100){
-        playerZero.classList.toggle('player--active');
-        playerOne.classList.toggle('player--active');
-        
-       
-        activePlayer = activePlayer === 0 ? 1 : 0;
+    if (scores[activePlayer] < 100){
+        switchPlayer();
 
-    }else if (highScore >= 100) {
+    }else if (scores[activePlayer] >= 100) {
         document.getElementById('name--' + activePlayer).textContent += 'WINNED!'; 
     }
     
