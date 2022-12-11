@@ -1,6 +1,7 @@
 'use strict';
 function resetPage(){
-    // playing = true;
+    playing = true;
+    document.getElementById(`current--${activePlayer}`).textContent = 0;
     scoreOneEl.textContent = 0;
     scoreTwoEl.textContent = 0;
     diceRoll.classList.add('hidden');
@@ -80,4 +81,5 @@ btnHold.addEventListener('click', function(){
 
 btnNew.addEventListener('click', function(){
     resetPage();
+    document.querySelector(`.player--${activePlayer}`).classList.remove('player--winner');
 });
