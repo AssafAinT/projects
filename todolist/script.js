@@ -73,3 +73,24 @@ AddButton.addEventListener('keydown',function(e){
             newElement();
         }
 });
+function sortList(){
+    const listArray = [];
+
+    for (let i = 0; i < myNodelist.length; ++i) {
+        listArray.push(myNodelist[i].innerHTML);
+    }
+    //need to improve sort algorithm
+    listArray.sort();
+    for (let i = 0; i < myNodelist.length; ++i) {
+        myNodelist[i].innerHTML = listArray[i];
+    }
+}
+
+function clearList(){
+    for (let i = 0; i < myNodelist.length; ++i) {
+        //improve clear also
+        myNodelist[i].remove();
+    }
+
+}
+

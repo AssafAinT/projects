@@ -93,16 +93,18 @@ input {
   margin: 0;
   border: none;
   border-radius: 0;
-  width: 75%;
+  width: 70%;
   padding: 10px;
   float: left;
   font-size: 16px;
+  border: 1px solid black;
+  
 }
 
 /* Style the "Add" button */
 .addBtn {
   padding: 10px;
-  width: 25%;
+  width: 10%;
   background: #d9d9d9;
   color: #555;
   float: left;
@@ -110,12 +112,41 @@ input {
   font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
-  border-radius: 0;
+  border: 1px solid black;
 }
-
+.sortBtn{
+  padding: 10px;
+  width: 10%;
+  background: #d9d9d9;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid black;
+}
+.clearBtn{
+    padding: 10px;
+    width: 10%;
+    background: #d9d9d9;
+    color: #555;
+    float: left;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid black;
+  }
+.sortBtn:hover {
+    background-color: #bbb;
+  }
 .addBtn:hover {
   background-color: #bbb;
 }
+.clearBtn:hover {
+    background-color: #bbb;
+  }
 .title{
     font-family:cursive;
     font-size: 30px;
