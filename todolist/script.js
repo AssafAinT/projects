@@ -66,3 +66,10 @@ function newElement() {
       }
     }
   }
+
+const AddButton = document.getElementById("todoInput");
+AddButton.addEventListener('keydown',function(e){
+    if (e.key === "Enter"){
+            newElement();
+        }
+});
