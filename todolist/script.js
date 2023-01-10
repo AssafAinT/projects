@@ -87,9 +87,10 @@ function sortList(){
 }
 
 function clearList(){
-    for (let i = 0; i < myNodelist.length; ++i) {
-        //improve clear also
-        myNodelist[i].remove();
+    let listRunner = document.querySelector('#myUL');
+
+    for (let i = 0; i < listRunner.children.length; ++i){
+        listRunner.removeChild(listRunner.childNodes[i]);
     }
 
 }
