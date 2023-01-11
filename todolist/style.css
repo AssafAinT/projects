@@ -1,3 +1,4 @@
+
 /* Include the padding and border in an element's total width and height */
 * {
   box-sizing: border-box;
@@ -151,3 +152,15 @@ input {
     font-family:cursive;
     font-size: 30px;
 }
+
+/* For mobile phones: */
+[class*="Btn"] {
+    width: 100%;
+  }
+  
+  @media only screen and (min-width: 600px) {
+    /* For tablets: */
+    .addBtn {width: 8.33%;}
+    .sortBtn {width: 8.33%;}
+    .clearBtn{width: 8.33%;}
+  }
