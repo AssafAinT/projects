@@ -90,11 +90,11 @@ ul li.checked::before {
 }
 
 /* Style the input */
-input {
+input:not(.datePicker) {
   margin: 0;
   border: none;
   border-radius: 0;
-  width: 70%;
+  width: 60%;
   padding: 10px;
   float: left;
   font-size: 16px;
@@ -165,3 +165,19 @@ input {
     .sortBtn {width: 8.33%;}
     .clearBtn{width: 8.33%;}
   }
+
+
+
+.datePicker
+{
+  padding: 10px;
+  width: 10%;
+  background: #d9d9d9;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid black;
+} 

@@ -16,9 +16,10 @@ let createDate = function(){
 }
 
 let myNodelist = document.getElementsByTagName("LI");
+console.log(myNodelist);
 for (let i = 0; i < myNodelist.length; i++) {
     myNodelist[i].innerHTML = createDate().nodeValue + " " + myNodelist[i].innerHTML;
-    myNodelist[i].appendChild(appendCloseButton());  
+    myNodelist[i].appendChild(appendCloseButton()); 
 }
 
 // Click on a close button to hide the current list item
